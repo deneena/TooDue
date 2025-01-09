@@ -1,0 +1,49 @@
+﻿@{
+    ViewBag.Title = "Projects";
+}
+
+<h2>Projects</h2>
+
+@if (ViewBag.Message != null)
+{
+    <div class="alert @ViewBag.Alert">@ViewBag.Message</div>
+}
+
+@if (ViewBag.Projects != null && ViewBag.Projects.Count > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Project Name</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var project in ViewBag.Projects)
+            {
+                <tr>
+                    <td>@project.Project_name</td>
+                    <td>@project.Project_description</td>
+                    <td>@project.Project_status</td>
+                    <td>
+                        <a href="@Url.Action("Details", new { id = project.Project_id })" class="btn btn-info">Details</a>
+                        
+                        @if (project.CreatedByUserId == ViewBag.UserCurent || User.IsInRole("Admin"))
+                        {
+                            <a href="@Url.Action("Edit", new { id = project.Project_id })" class="btn btn-warning">Edit</a>
+                            <a href="@Url.Action("Delete", new { id = project.Project_id })" class="btn btn-danger">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No projects found. Click the button below to create a new project.</p>
+}
+
+<a href="@Url.Action("Create")" class="btn btn-primary">Create New Project</a>

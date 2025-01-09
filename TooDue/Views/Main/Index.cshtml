@@ -1,0 +1,135 @@
+﻿@{
+}
+
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+    }
+
+    body {
+        /* background-image: url("../img/tema-vidra.png"); */
+        background-image: url("../img/tema-deer.png");
+        /* background-image: url("../img/tema-borsec.png"); */
+        /* background-image: url("../img/tema-vulpe.png"); */
+        /* background-image: url("../img/tema-coco.png"); */
+        /* background-image: url("../img/tema-iepure.png"); */
+        background-size: 160px;
+        background-repeat: repeat;
+    }
+
+    .container-menu {
+        display: grid;
+        grid-gap: 20px;
+        grid-template-columns: 1fr 4fr; /* proportii flexibile */
+        height: 80vh;
+        width: 85vw;
+        /* padding-left: 1rem; */
+        margin-top: 14vh;
+        margin-left: auto; /* removed */
+        margin-right: auto; /* removed */
+        position:  relative;
+    }
+
+    .side-menu-back {
+        display: flex; /* flexbox */
+        justify-content: center; /* centrat */
+        align-items: center; /* centrat */
+        border-radius: 10px;
+        background-color: rgba(201, 5, 129, 0.6);
+        height: 100%; /* sa se adapteeze la container */
+        grid-column: 1 / 2; /* sa fie 1/2 din container */
+    }
+
+    .side-menu {
+        z-index: 1000;
+        opacity: 1;
+        background-color: #c90581;
+        border-radius: 10px;
+        padding: 15px;
+        height: 95%;
+        width: 90%;
+    }
+
+    .main-menu-back {
+        display: flex; /* am transformat in flexbox */
+        justify-content: center; /* centrat */
+        align-items: center; /* centrat */
+        border-radius: 10px;
+        background-color: rgba(201, 5, 129, 0.6);
+        height: 100%; /* sa se adapteeze la container */
+        grid-column: 2 / 3; /* sa fie 2/3 din cealalta */
+    }
+
+    .main-menu {
+        background-color: #c90581;
+        opacity: 1;
+        border-radius: 10px;
+        padding: 15px;
+        height: 95%; /* height proportional */
+        width: calc(100% - 22px); /* ca sa ramana aceeasi margine transparenta asemanatoare cu cea din stanga (in medie) */
+    }
+
+    .library-thumb {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+        margin-bottom: 15px;
+    }
+
+    .title {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+        line-height: 1.2;
+        font-size: 1.8rem;
+    }
+
+    .menu-categories {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .menu-categories a {
+            color: #795548;
+            padding: 8px 0px;
+            text-align: left;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            transition: all 0.5s;
+        }
+
+            .menu-categories a.active {
+                color: #b78f57;
+                font-weight: bold;
+            }
+
+            .menu-categories a:hover {
+                background: #85573e;
+            }
+
+</style>
+
+<div class="container-menu">
+    <div class="side-menu-back">
+        <div class="side-menu">
+            <div class="menu-header">
+                <a><img src="img/tema-deer.png" class="library-thumb"></a>
+                <p>@User.Identity?.Name</p>
+            </div>
+
+            <div class="menu-categories">
+                <a href="@Url.Action("Index", "Projects")"></i>Projects</a>
+                <a></i>Settings</a>
+                <a></i>Themes</a>
+            </div>
+        </div>
+    </div>
+    <div class="main-menu-back">
+        <div class="main-menu">
+        </div>
+    </div>
+</div>
+<script src="~/js/index.js"></script>
