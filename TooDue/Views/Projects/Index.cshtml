@@ -28,7 +28,7 @@
                     <td>@project.Project_description</td>
                     <td>@project.Project_status</td>
                     <td>
-                        <a href="@Url.Action("Details", new { id = project.Project_id })" class="btn btn-info">Details</a>
+                        <a asp-controller="Tasks" asp-action="Show" asp-route-projectId="@project.Project_id" class="btn btn-info">Details</a>
                         
                         @if (project.CreatedByUserId == ViewBag.UserCurent || User.IsInRole("Admin"))
                         {

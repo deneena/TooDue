@@ -7,10 +7,12 @@ namespace TooDue.Models
     {
         [Key]
         public int Pur_id { get; set; }
-        public string Role {  get; set; }
-        [ForeignKey("Projects")]
-        public virtual Project Project { get; set; }
-        [ForeignKey("Users")]
-        public virtual User User { get; set; }
+        public string Role { get; set; }
+
+        public int Related_project_id { get; set; }
+        
+        public string Related_user_id { get; set; }
+        
+        
     }
 }

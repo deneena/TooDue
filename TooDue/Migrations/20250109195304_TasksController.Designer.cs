@@ -9,11 +9,11 @@ using TooDue.Data;
 
 #nullable disable
 
-namespace TooDue.Data.Migrations
+namespace TooDue.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250109131531_migratie2")]
-    partial class migratie2
+    [Migration("20250109195304_TasksController")]
+    partial class TasksController
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -297,6 +297,53 @@ namespace TooDue.Data.Migrations
                     b.ToTable("Projects");
                 });
 
+            modelBuilder.Entity("TooDue.Models.Project_User_Role", b =>
+                {
+                    b.Property<int>("Pur_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Pur_id"));
+
+                    b.Property<int>("Related_project_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Related_user_id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Pur_id");
+
+                    b.ToTable("ProjectUserRoles");
+                });
+
+            modelBuilder.Entity("TooDue.Models.Project_User_Task", b =>
+                {
+                    b.Property<int>("Put_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Put_id"));
+
+                    b.Property<int>("Project_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User_id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Put_id");
+
+                    b.ToTable("ProjectUserTask");
+                });
+
             modelBuilder.Entity("TooDue.Models.Task", b =>
                 {
                     b.Property<int>("Task_id")
@@ -308,36 +355,26 @@ namespace TooDue.Data.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("Is_collaborative")
-                        .HasColumnType("bit");
+                    b.Property<string>("Link_to_media")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Task_complete_date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Task_create_date")
-                        .HasColumnType("datetime2");
+                    b.Property<bool>("Task_completion")
+                        .HasColumnType("bit");
 
-                    b.Property<DateTime>("Task_deadline")
+                    b.Property<DateTime>("Task_create_date")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Task_description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Task_label")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Task_name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Task_status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Task_update_date")
-                        .HasColumnType("datetime2");
 
                     b.HasKey("Task_id");
 

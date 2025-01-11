@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "Tasks for Project";
+    var tasks = ViewBag.Tasks as List<TooDue.Models.Task>;
+    var projectId = ViewBag.ProjectId ?? 0; // Ensure projectId is not null
+    var isAdmin = User.IsInRole("Admin");
+    var isOrganizer = ViewBag.IsOrganizer ?? false; // Assuming you set this in the controller
+}
+
+<h2>Tasks for Project @projectId</h2>
+
+@if (tasks != null && tasks.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Task Name</th>
+                <th>Description</th>
+                <th>Completion Status</th>
+                <th>Created Date</th>
+                <th>Complete Date</th>
+                <th>Link to Media</th>
+                <th>Embedded Media</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var task in tasks)
+            {
+                <tr>
+                    <td>@task.Task_name</td>
+                    <td>@task.Task_description</td>
+                    <td>@task.Task_completion</td>
+                    <td>@task.Task_create_date.ToString("yyyy-MM-dd")</td>
+                    <td>@(task.Task_completion == "Completed" ? task.Task_complete_date.ToString("yyyy-MM-dd") : "N/A")</td>
+                    <td><a href="@task.Link_to_media" target="_blank">Media</a></td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(task.Link_to_media))
+                        {
+                            <iframe src="@task.Link_to_media" width="500" height="400" style="transform: scale(0.5); transform-origin: 0 0;" frameborder="0" allowfullscreen></iframe>
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Mark", "Tasks", new { id = task.Task_id })" class="btn btn-success">Mark as Completed</a>
+                        <a asp-controller="Comments" asp-action="Show" asp-route-taskId="@task.Task_id" class="btn btn-info">Comments</a>
+                        @if (isAdmin || isOrganizer)
+                        {
+                            <a href="@Url.Action("Assign", "Tasks", new { id = task.Task_id })" class="btn btn-info">Assign</a>
+                            <a href="@Url.Action("Edit", "Tasks", new { id = task.Task_id })" class="btn btn-warning">Edit</a>
+                            <a href="@Url.Action("Delete", "Tasks", new { id = task.Task_id })" class="btn btn-danger">Delete</a>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert @ViewBag.Alert">
+        @ViewBag.Message
+    </div>
+}
+
+<!-- Back Button -->
+<a href="@Url.Action("Index", "Projects")" class="btn btn-secondary">Back</a>
+
+<!-- Create New Task Button -->
+@if (isAdmin || isOrganizer)
+{
+    <a href="@Url.Action("Create", "Tasks", new { projectId = projectId })" class="btn btn-primary">Create New Task</a>
+}

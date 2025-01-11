@@ -7,12 +7,9 @@ namespace TooDue.Models
     {
         [Key]
         public int Put_id { get; set; }
-        public bool Task_completion { get; set; }
-        [ForeignKey("Projects")]
-        public virtual Project Project { get; set; }
-        [ForeignKey("Users")]
-        public virtual User User { get; set; }
-        [ForeignKey("Tasks")]
-        public virtual Task Task { get; set; }
+        public int Project_id { get; set; }
+        public string User_id { get; set; }
+
+        public int Task_id { get; set; } 
     }
 }

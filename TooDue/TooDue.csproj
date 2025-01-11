@@ -21,9 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Views\Comments\" />
     <Folder Include="Views\Themes\" />
-    <Folder Include="Views\Tasks\" />
     <Folder Include="Views\Users\" />
     <Folder Include="wwwroot\NewFolder\" />
   </ItemGroup>

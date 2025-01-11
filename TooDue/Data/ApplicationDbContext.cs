@@ -15,6 +15,8 @@ namespace TooDue.Data
         public DbSet<Project> Projects { get; set; }
         public DbSet<TooDue.Models.Task> Tasks { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Project_User_Role> ProjectUserRoles { get; set; }
+        public DbSet<Project_User_Task> ProjectUserTask { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

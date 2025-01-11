@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace TooDue.Models
 {
@@ -9,7 +9,10 @@ namespace TooDue.Models
         public int Comment_id { get; set; }
         public string Comment_text { get; set; }
         public DateTime Comment_Date { get; set; }
-        [ForeignKey("Users")]
-        public virtual User User { get; set; }
+        public string UserId { get; set; }
+        public int TaskId { get; set; }
+
+   
+        public virtual ApplicationUser? User { get; set; }
     }
 }

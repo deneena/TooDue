@@ -1,0 +1,51 @@
+﻿@model TooDue.Models.Task
+
+@{
+    ViewBag.Title = "Create Task";
+    var projectId = ViewBag.ProjectId;
+}
+
+<h2>Create Task for Project @projectId</h2>
+
+<form asp-action="Create">
+    <div class="form-group">
+        <label asp-for="Task_name" class="control-label"></label>
+        <input asp-for="Task_name" class="form-control" />
+        <span asp-validation-for="Task_name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Task_description" class="control-label"></label>
+        <input asp-for="Task_description" class="form-control" />
+        <span asp-validation-for="Task_description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Task_completion" class="control-label"></label>
+        <input type="checkbox" asp-for="Task_completion" class="form-check-input" />
+        <span asp-validation-for="Task_completion" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Task_complete_date" class="control-label"></label>
+        <input asp-for="Task_complete_date" class="form-control" />
+        <span asp-validation-for="Task_complete_date" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Link_to_media" class="control-label"></label>
+        <input asp-for="Link_to_media" class="form-control" />
+        <span asp-validation-for="Link_to_media" class="text-danger"></span>
+    </div>
+    <input type="hidden" asp-for="Task_create_date" />
+    <input type="hidden" name="projectId" value="@projectId" />
+    <div class="form-group">
+        <input type="submit" value="Create" class="btn btn-primary" />
+    </div>
+</form>
+
+<div>
+    <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

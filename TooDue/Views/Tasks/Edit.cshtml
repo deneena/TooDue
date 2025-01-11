@@ -1,0 +1,41 @@
+﻿@model TooDue.Models.Task
+
+@{
+    ViewBag.Title = "Edit Task";
+}
+
+<h2>Edit Task</h2>
+
+<form asp-action="Edit">
+    <div class="form-horizontal">
+        <h4>Task</h4>
+        <hr />
+        <input type="hidden" asp-for="Task_id" />
+        <input type="hidden" name="ProjectId" value="@ViewBag.ProjectId" />
+        <div class="form-group">
+            <label asp-for="Task_name" class="control-label"></label>
+            <input asp-for="Task_name" class="form-control" />
+            <span asp-validation-for="Task_name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Task_description" class="control-label"></label>
+            <input asp-for="Task_description" class="form-control" />
+            <span asp-validation-for="Task_description" class="text-danger"></span>
+        </div>
+        
+        <input type="hidden" asp-for="Task_completion" />
+
+        <div class="form-group">
+            <label asp-for="Link_to_media" class="control-label"></label>
+            <input asp-for="Link_to_media" class="form-control" />
+            <span asp-validation-for="Link_to_media" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </div>
+</form>
+
+<div>
+    <a asp-action="Show" asp-route-projectId="@ViewBag.ProjectId">Back to List</a>
+</div>

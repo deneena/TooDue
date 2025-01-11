@@ -7,6 +7,7 @@ using TooDue.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TooDue.Controllers
 {
@@ -24,7 +25,7 @@ namespace TooDue.Controllers
             _logger = logger;
         }
 
-        // GET: Projects
+        
         [Authorize(Roles = "User,Editor,Admin")]
         public async Task<IActionResult> Index()
         {
@@ -48,8 +49,11 @@ namespace TooDue.Controllers
             var isAdmin = User.IsInRole("Admin");
 
             var projects = isAdmin
-                ? await _context.Projects.Include(p => p.CreatedByUser).ToListAsync()
-                : await _context.Projects.Where(p => p.CreatedByUserId == userId).Include(p => p.CreatedByUser).ToListAsync();
+               ? await _context.Projects.Include(p => p.CreatedByUser).ToListAsync()
+               : await _context.Projects
+                   .Where(p => p.CreatedByUserId == userId || _context.ProjectUserRoles.Any(pur => pur.Related_user_id == userId && pur.Related_project_id == p.Project_id))
+                   .Include(p => p.CreatedByUser)
+                   .ToListAsync();
 
             if (!projects.Any())
             {
@@ -62,38 +66,14 @@ namespace TooDue.Controllers
             return View();
         }
 
-        // GET: Projects/Details/5
-        [Authorize(Roles = "User,Editor,Admin")]
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var project = await _context.Projects
-                .Include(p => p.CreatedByUser)
-                .FirstOrDefaultAsync(m => m.Project_id == id);
-            if (project == null)
-            {
-                TempData["message"] = "Project not found.";
-                TempData["messageType"] = "alert-danger";
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(project);
-        }
-
-        // GET: Projects/Create
-        [Authorize(Roles = "User,Editor,Admin")]
+       
+        [Authorize(Roles = "User,Admin")]
         public IActionResult Create()
         {
             Project project = new Project();
             return View(project);
         }
 
-        // POST: Projects/Create
-        // POST: Projects/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "User,Admin")]
@@ -110,7 +90,6 @@ namespace TooDue.Controllers
                 return Unauthorized();
             }
 
-            // Set the CreatedByUserId field
             project.CreatedByUserId = userId;
             project.CreatedByUser = await _userManager.FindByIdAsync(userId);
 
@@ -120,7 +99,7 @@ namespace TooDue.Controllers
             project.Project_status = "in work"; // Set the project status to "in work"
             _logger.LogInformation("Project status set to: {Status}", project.Project_status);
 
-            // Clear the model state error for CreatedByUserId
+
             ModelState.Clear();
             TryValidateModel(project);
 
@@ -131,13 +110,25 @@ namespace TooDue.Controllers
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Project saved to database.");
 
+                var projectUserRole = new Project_User_Role
+                {
+                    Related_project_id = project.Project_id,
+                    Related_user_id = userId,
+                    Role = "organiser"
+                };
+                _context.Add(projectUserRole);
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Project_User_Role entry saved to database.");
+
                 TempData["message"] = "Project has been created.";
                 TempData["messageType"] = "alert-success";
                 return RedirectToAction("Index");
             }
+            else
+            {
+                _logger.LogWarning("Model state is invalid.");
+            }
 
-            _logger.LogWarning("Model state is invalid.");
-            // Log model state errors
             foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
             {
                 _logger.LogError("Model state error: {ErrorMessage}", error.ErrorMessage);
@@ -147,7 +138,6 @@ namespace TooDue.Controllers
         }
 
 
-        // GET: Projects/Edit/5
         [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
@@ -156,38 +146,58 @@ namespace TooDue.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Users = new SelectList(_context.Users, "Id", "UserName");
+
             return View(project);
         }
 
-        // POST: Projects/Edit/5
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "User,Editor,Admin")]
-        public async Task<IActionResult> Edit(int id, Project project)
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> Edit(int id, Project project, string? userIdToAdd)
         {
             if (id != project.Project_id)
             {
                 return NotFound();
             }
 
+            var existingProject = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Project_id == id);
+            if (existingProject == null)
+            {
+                return NotFound();
+            }
+            project.CreatedByUserId = existingProject.CreatedByUserId;
+
+            ModelState.Clear();
+            TryValidateModel(project);
+
+
+
             if (ModelState.IsValid)
             {
-                    var existingProject = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Project_id == id);
-                    if (existingProject == null)
-                    {
-                        return NotFound();
-                    }
-                    project.CreatedByUserId = existingProject.CreatedByUserId;
-
                     _context.Update(project);
                     await _context.SaveChangesAsync();
-                    TempData["message"] = "Project has been updated.";
-                    TempData["messageType"] = "alert-success";
-                    return RedirectToAction(nameof(Index));
+
+                    if (!string.IsNullOrEmpty(userIdToAdd))
+                    {
+                        var projectUserRole = new Project_User_Role
+                        {
+                            Related_project_id = project.Project_id,
+                            Related_user_id = userIdToAdd,
+                            Role = "member"
+                        };
+                        _context.Add(projectUserRole);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    ViewBag.Message= "Project has been updated.";
+                    ViewBag.MessageType = "alert-success";
+                    return RedirectToAction("Index");
             }
             else
             {
-                _logger.LogWarning("Model state is invalid.");
+                _logger.LogWarning("Model state is invalid. And here is the error indeed");
                 foreach (var state in ModelState)
                 {
                     foreach (var error in state.Value.Errors)
@@ -196,12 +206,13 @@ namespace TooDue.Controllers
                     }
                 }
             }
+            ViewBag.Users = new SelectList(_context.Users, "Id", "UserName");
+
             return View(project);
         }
 
 
-        // GET: Projects/Delete/5
-        [Authorize(Roles = "User,Editor,Admin")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -220,7 +231,6 @@ namespace TooDue.Controllers
             return View(project);
         }
 
-        // POST: Projects/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "User,Editor,Admin")]
@@ -242,7 +252,7 @@ namespace TooDue.Controllers
 
         private void SetAccessRights()
         {
-            ViewBag.AfisareButoane = User.IsInRole("Editor") || User.IsInRole("User");
+            //ViewBag.AfisareButoane = User.IsInRole("Editor") || User.IsInRole("User");
             ViewBag.EsteAdmin = User.IsInRole("Admin");
             ViewBag.UserCurent = _userManager.GetUserId(User);
         }

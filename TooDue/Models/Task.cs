@@ -6,14 +6,21 @@ namespace TooDue.Models
     {
         [Key]
         public int Task_id {  get; set; }
-        public string Task_name {  get; set; }  
+        [Required]
+        public string Task_name {  get; set; }
+        [Required]
         public string Task_description { get; set; }
-        public string Task_status { get; set; }
-        public string Task_label { get; set; }
-        public bool Is_collaborative { get; set; }
-        public DateTime Task_deadline { get; set; }
+        [Required]
+        public string Task_completion { get; set; }
+        [Required]
         public DateTime Task_create_date {get; set; }
-        public DateTime Task_update_date { get; set; }
+        [Required]
         public DateTime Task_complete_date { get; set; }
+        [Required]
+        public string Link_to_media { get; set; }
+
+        public int Project_Id;
+
+
     }
 }

@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Comments";
+    var comments = ViewBag.Comments as IEnumerable<TooDue.Models.Comment>;
+}
+
+<h2>Comments for task @ViewBag.taskId</h2>
+
+
+@if (comments != null && comments.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Comment Text</th>
+                <th>Comment Date</th>
+                <th>User</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (comments != null)
+            {
+                foreach (var comment in comments)
+                {
+                    <tr>
+                        <td>@comment.Comment_text</td>
+                        <td>@comment.Comment_Date</td>
+                        <td>@ViewBag.UserMail</td>
+                        <td>
+                            @if(comment.UserId ==  ViewBag.CurrentUserId || ViewBag.IsAdmin)
+                            {
+                                <a asp-action="Edit" asp-route-id="@comment.Comment_id" class="btn btn-warning">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@comment.Comment_id" class="btn btn-danger">Delete</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        No comments found for this task.
+    </div>
+
+}
+
+
+<div>
+    <a asp-action="Create" asp-route-taskId="@ViewBag.TaskId" class="btn btn-primary">Add Comment</a>
+    <a asp-controller="Tasks" asp-action="Show" asp-route-projectId="@ViewBag.ProjectId" class="btn btn-secondary">Back to Tasks</a>
+</div>

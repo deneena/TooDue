@@ -9,11 +9,11 @@ using TooDue.Data;
 
 #nullable disable
 
-namespace TooDue.Data.Migrations
+namespace TooDue.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250109105330_migratie1")]
-    partial class migratie1
+    [Migration("20250111133334_CommentUser")]
+    partial class CommentUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -241,9 +241,6 @@ namespace TooDue.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Comment_id"));
 
-                    b.Property<string>("ApplicationUserId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("Comment_Date")
                         .HasColumnType("datetime2");
 
@@ -251,14 +248,16 @@ namespace TooDue.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Users")
+                    b.Property<int>("TaskId")
                         .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Comment_id");
 
-                    b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("Users");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Comments");
                 });
@@ -271,7 +270,8 @@ namespace TooDue.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Project_id"));
 
-                    b.Property<string>("ApplicationUserId")
+                    b.Property<string>("CreatedByUserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("Project_create_date")
@@ -291,9 +291,56 @@ namespace TooDue.Data.Migrations
 
                     b.HasKey("Project_id");
 
-                    b.HasIndex("ApplicationUserId");
+                    b.HasIndex("CreatedByUserId");
 
                     b.ToTable("Projects");
+                });
+
+            modelBuilder.Entity("TooDue.Models.Project_User_Role", b =>
+                {
+                    b.Property<int>("Pur_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Pur_id"));
+
+                    b.Property<int>("Related_project_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Related_user_id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Pur_id");
+
+                    b.ToTable("ProjectUserRoles");
+                });
+
+            modelBuilder.Entity("TooDue.Models.Project_User_Task", b =>
+                {
+                    b.Property<int>("Put_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Put_id"));
+
+                    b.Property<int>("Project_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User_id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Put_id");
+
+                    b.ToTable("ProjectUserTask");
                 });
 
             modelBuilder.Entity("TooDue.Models.Task", b =>
@@ -307,23 +354,21 @@ namespace TooDue.Data.Migrations
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<bool>("Is_collaborative")
-                        .HasColumnType("bit");
+                    b.Property<string>("Link_to_media")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Task_complete_date")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("Task_create_date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("Task_deadline")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Task_description")
+                    b.Property<string>("Task_completion")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Task_label")
+                    b.Property<DateTime>("Task_create_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Task_description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -331,113 +376,11 @@ namespace TooDue.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Task_status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Task_update_date")
-                        .HasColumnType("datetime2");
-
                     b.HasKey("Task_id");
 
                     b.HasIndex("ApplicationUserId");
 
                     b.ToTable("Tasks");
-                });
-
-            modelBuilder.Entity("TooDue.Models.Theme", b =>
-                {
-                    b.Property<int>("Theme_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Theme_id"));
-
-                    b.Property<string>("Animal")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Background_repeat")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Dark_accent_color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Flower")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Light_accent_color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Main_color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Transparent_color")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Theme_id");
-
-                    b.ToTable("Theme");
-                });
-
-            modelBuilder.Entity("TooDue.Models.User", b =>
-                {
-                    b.Property<int>("User_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("User_id"));
-
-                    b.Property<string>("Banner_picture")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Phone")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Profile_picture")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Themes")
-                        .HasColumnType("int");
-
-                    b.Property<string>("User_bio")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("User_displayname")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("User_status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("User_id");
-
-                    b.HasIndex("Themes");
-
-                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -493,13 +436,9 @@ namespace TooDue.Data.Migrations
 
             modelBuilder.Entity("TooDue.Models.Comment", b =>
                 {
-                    b.HasOne("TooDue.Models.ApplicationUser", null)
+                    b.HasOne("TooDue.Models.ApplicationUser", "User")
                         .WithMany("Comments")
-                        .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("TooDue.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("Users")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -508,9 +447,13 @@ namespace TooDue.Data.Migrations
 
             modelBuilder.Entity("TooDue.Models.Project", b =>
                 {
-                    b.HasOne("TooDue.Models.ApplicationUser", null)
+                    b.HasOne("TooDue.Models.ApplicationUser", "CreatedByUser")
                         .WithMany("Articles")
-                        .HasForeignKey("ApplicationUserId");
+                        .HasForeignKey("CreatedByUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedByUser");
                 });
 
             modelBuilder.Entity("TooDue.Models.Task", b =>
@@ -518,17 +461,6 @@ namespace TooDue.Data.Migrations
                     b.HasOne("TooDue.Models.ApplicationUser", null)
                         .WithMany("Bookmarks")
                         .HasForeignKey("ApplicationUserId");
-                });
-
-            modelBuilder.Entity("TooDue.Models.User", b =>
-                {
-                    b.HasOne("TooDue.Models.Theme", "Theme")
-                        .WithMany()
-                        .HasForeignKey("Themes")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Theme");
                 });
 
             modelBuilder.Entity("TooDue.Models.ApplicationUser", b =>
