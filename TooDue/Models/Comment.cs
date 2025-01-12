@@ -12,7 +12,7 @@ namespace TooDue.Models
         public string UserId { get; set; }
         public int TaskId { get; set; }
 
-   
+        public bool isEdited { get; set; }
         public virtual ApplicationUser? User { get; set; }
     }
 }

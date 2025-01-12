@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Build.Framework;
 
 namespace TooDue.Controllers
 {
@@ -25,8 +26,26 @@ namespace TooDue.Controllers
             _logger = logger;
         }
 
-        
-        [Authorize(Roles = "User,Editor,Admin")]
+        private List<ApplicationUser> GetUsersNotInProject(int projectId)
+        {
+            var usersInProject = _context.ProjectUserRoles
+       .Where(pur => pur.Related_project_id == projectId)
+       .Select(pur => pur.Related_user_id)
+       .ToList();
+
+            _logger.LogInformation("Users in project {ProjectId}: {UsersInProject}", projectId, string.Join(", ", usersInProject));
+
+            var usersNotInProject = _userManager.Users
+                .Where(u => !usersInProject.Contains(u.Id))
+                .ToList();
+
+            _logger.LogInformation("Users not in project {ProjectId}: {UsersNotInProject}", projectId, string.Join(", ", usersNotInProject.Select(u => u.Id)));
+
+            return usersNotInProject;
+        }
+
+
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> Index()
         {
             if (TempData.ContainsKey("message"))
@@ -146,12 +165,20 @@ namespace TooDue.Controllers
             {
                 return NotFound();
             }
-            ViewBag.Users = new SelectList(_context.Users, "Id", "UserName");
+
+            ViewBag.ProjectName = project.Project_name;
+            ViewBag.Users = GetUsersNotInProject(id)
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = u.UserName
+                }).ToList();
 
             return View(project);
         }
 
-        
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "User,Admin")]
@@ -159,12 +186,14 @@ namespace TooDue.Controllers
         {
             if (id != project.Project_id)
             {
+                _logger.LogWarning("what the heck, id {id} and pojectId {project.Project_id} ", id, project.Project_id);
                 return NotFound();
             }
 
             var existingProject = await _context.Projects.AsNoTracking().FirstOrDefaultAsync(p => p.Project_id == id);
             if (existingProject == null)
             {
+                _logger.LogWarning("but i can");
                 return NotFound();
             }
             project.CreatedByUserId = existingProject.CreatedByUserId;
@@ -172,32 +201,30 @@ namespace TooDue.Controllers
             ModelState.Clear();
             TryValidateModel(project);
 
-
-
             if (ModelState.IsValid)
             {
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
+                _context.Update(project);
+                await _context.SaveChangesAsync();
 
-                    if (!string.IsNullOrEmpty(userIdToAdd))
+                if (!string.IsNullOrEmpty(userIdToAdd))
+                {
+                    var projectUserRole = new Project_User_Role
                     {
-                        var projectUserRole = new Project_User_Role
-                        {
-                            Related_project_id = project.Project_id,
-                            Related_user_id = userIdToAdd,
-                            Role = "member"
-                        };
-                        _context.Add(projectUserRole);
-                        await _context.SaveChangesAsync();
-                    }
+                        Related_project_id = project.Project_id,
+                        Related_user_id = userIdToAdd,
+                        Role = "member"
+                    };
+                    _context.Add(projectUserRole);
+                    await _context.SaveChangesAsync();
+                }
 
-                    ViewBag.Message= "Project has been updated.";
-                    ViewBag.MessageType = "alert-success";
-                    return RedirectToAction("Index");
+                TempData["message"] = "Project has been updated.";
+                TempData["messageType"] = "alert-success";
+                return RedirectToAction("Index");
             }
             else
             {
-                _logger.LogWarning("Model state is invalid. And here is the error indeed");
+                _logger.LogWarning("Model state is invalid.");
                 foreach (var state in ModelState)
                 {
                     foreach (var error in state.Value.Errors)
@@ -206,10 +233,16 @@ namespace TooDue.Controllers
                     }
                 }
             }
-            ViewBag.Users = new SelectList(_context.Users, "Id", "UserName");
+
+            ViewBag.Users = _context.Users.Select(u => new SelectListItem
+            {
+                Value = u.Id.ToString(),
+                Text = u.UserName
+            }).ToList();
 
             return View(project);
         }
+
 
 
         [Authorize(Roles = "User,Admin")]
@@ -234,7 +267,7 @@ namespace TooDue.Controllers
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "User,Editor,Admin")]
-        public async Task<IActionResult> Delete(int id, Project project)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var projectToDelete = await _context.Projects.FindAsync(id);
             if (projectToDelete == null)
@@ -242,10 +275,85 @@ namespace TooDue.Controllers
                 return NotFound();
             }
 
+            var projectUserRoles = _context.ProjectUserRoles.Where(pur => pur.Related_project_id == id);
+            _context.ProjectUserRoles.RemoveRange(projectUserRoles);
+
+            var projectUserTasks = _context.ProjectUserTask.Where(put => put.Project_id == id);
+            _context.ProjectUserTask.RemoveRange(projectUserTasks);
+
+            var tasks = _context.Tasks.Where(t => t.Project_Id == id).ToList();
+            foreach (var task in tasks)
+            {
+                var comments = _context.Comments.Where(c => c.TaskId == task.Task_id);
+                _context.Comments.RemoveRange(comments);
+
+                _context.Tasks.Remove(task);
+            }
+
             _context.Projects.Remove(projectToDelete);
+
             await _context.SaveChangesAsync();
-            TempData["message"] = "Project has been deleted.";
-            TempData["messageType"] = "alert-success";
+
+            ViewBag.Message = "Project has been deleted.";
+            ViewBag.MessageType = "alert-success";
+            return RedirectToAction("Index");
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeOrganiser(int id)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            ViewBag.ProjectName = project.Project_name;
+
+            var usersInProject = _context.ProjectUserRoles
+                .Where(pur => pur.Related_project_id == id)
+                .Select(pur => pur.Related_user_id)
+                .ToList();
+
+            var admins = await _userManager.GetUsersInRoleAsync("Admin");
+
+            var allUsers = _userManager.Users
+                .Where(u => usersInProject.Contains(u.Id) || admins.Select(a => a.Id).Contains(u.Id))
+                .Select(u => new SelectListItem
+                {
+                    Value = u.Id.ToString(),
+                    Text = u.UserName
+                }).ToList();
+
+            ViewBag.AllUsers = allUsers;
+
+            return View(project);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ChangeOrganiser(int id, string newOwnerId)
+        {
+            var project = await _context.Projects.FindAsync(id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            if (!string.IsNullOrEmpty(newOwnerId) && newOwnerId != project.CreatedByUserId)
+            {
+                // Update the project to set the new organizer
+                project.CreatedByUserId = newOwnerId;
+                _context.Update(project);
+
+                await _context.SaveChangesAsync();
+
+                TempData["message"] = "Project organiser has been changed.";
+                TempData["messageType"] = "alert-success";
+            }
+
             return RedirectToAction("Index");
         }
 

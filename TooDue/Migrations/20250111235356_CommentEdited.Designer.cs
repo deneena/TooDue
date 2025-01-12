@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TooDue.Data;
 
@@ -11,9 +12,11 @@ using TooDue.Data;
 namespace TooDue.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250111235356_CommentEdited")]
+    partial class CommentEdited
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,30 +160,6 @@ namespace TooDue.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Project_User_Task", b =>
-                {
-                    b.Property<int>("Put_id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Put_id"));
-
-                    b.Property<int>("Project_id")
-                        .HasColumnType("int")
-                        .HasColumnName("ProjectId");
-
-                    b.Property<int>("Task_id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("User_id")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Put_id");
-
-                    b.ToTable("ProjectUserTask");
                 });
 
             modelBuilder.Entity("TooDue.Models.ApplicationUser", b =>
@@ -344,6 +323,29 @@ namespace TooDue.Migrations
                     b.ToTable("ProjectUserRoles");
                 });
 
+            modelBuilder.Entity("TooDue.Models.Project_User_Task", b =>
+                {
+                    b.Property<int>("Put_id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Put_id"));
+
+                    b.Property<int>("Project_id")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Task_id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("User_id")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Put_id");
+
+                    b.ToTable("ProjectUserTask");
+                });
+
             modelBuilder.Entity("TooDue.Models.Task", b =>
                 {
                     b.Property<int>("Task_id")
@@ -358,9 +360,6 @@ namespace TooDue.Migrations
                     b.Property<string>("Link_to_media")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Project_Id")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Task_complete_date")
                         .HasColumnType("datetime2");
@@ -383,8 +382,6 @@ namespace TooDue.Migrations
                     b.HasKey("Task_id");
 
                     b.HasIndex("ApplicationUserId");
-
-                    b.HasIndex("Project_Id");
 
                     b.ToTable("Tasks");
                 });
@@ -467,14 +464,6 @@ namespace TooDue.Migrations
                     b.HasOne("TooDue.Models.ApplicationUser", null)
                         .WithMany("Bookmarks")
                         .HasForeignKey("ApplicationUserId");
-
-                    b.HasOne("TooDue.Models.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("Project_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("TooDue.Models.ApplicationUser", b =>

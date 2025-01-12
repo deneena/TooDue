@@ -10,8 +10,10 @@
     <div class="form-horizontal">
         <h4>Task</h4>
         <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Task_id" />
-        <input type="hidden" name="ProjectId" value="@ViewBag.ProjectId" />
+        <input type="hidden" asp-for="Project_Id" />
+
         <div class="form-group">
             <label asp-for="Task_name" class="control-label"></label>
             <input asp-for="Task_name" class="form-control" />
@@ -23,8 +25,19 @@
             <span asp-validation-for="Task_description" class="text-danger"></span>
         </div>
         
-        <input type="hidden" asp-for="Task_completion" />
-
+            <input type="hidden" asp-for="Task_completion" class="form-control" />
+           
+       
+        <div class="form-group">
+            <label asp-for="Task_create_date" class="control-label"></label>
+            <input asp-for="Task_create_date" class="form-control" />
+            <span asp-validation-for="Task_create_date" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Task_deadline" class="control-label"></label>
+            <input asp-for="Task_deadline" class="form-control" />
+            <span asp-validation-for="Task_deadline" class="text-danger"></span>
+        </div>
         <div class="form-group">
             <label asp-for="Link_to_media" class="control-label"></label>
             <input asp-for="Link_to_media" class="form-control" />
@@ -39,3 +52,9 @@
 <div>
     <a asp-action="Show" asp-route-projectId="@ViewBag.ProjectId">Back to List</a>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

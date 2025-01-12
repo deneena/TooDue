@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TooDue.Models
 {
@@ -11,16 +12,18 @@ namespace TooDue.Models
         [Required]
         public string Task_description { get; set; }
         [Required]
-        public string Task_completion { get; set; }
+        public string Task_completion { get; set; } = "Not started";
         [Required]
-        public DateTime Task_create_date {get; set; }
+        public DateTime Task_create_date { get; set; } = DateTime.Now;
         [Required]
-        public DateTime Task_complete_date { get; set; }
+        public DateTime Task_complete_date { get; set; } = DateTime.Now;
+
+        public DateTime Task_deadline;
         [Required]
         public string Link_to_media { get; set; }
 
-        public int Project_Id;
-
-
+        [ForeignKey("Project")]
+        public int Project_Id { get; set; }
+        public Project? Project { get; set; }
     }
 }

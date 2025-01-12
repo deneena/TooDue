@@ -24,9 +24,9 @@
             @foreach (var project in ViewBag.Projects)
             {
                 <tr>
-                    <td>@project.Project_name</td>
-                    <td>@project.Project_description</td>
-                    <td>@project.Project_status</td>
+                    <td class="text-white">@project.Project_name</td>
+                    <td class="text-white"> @project.Project_description</td>
+                    <td class="text-white">@project.Project_status</td>
                     <td>
                         <a asp-controller="Tasks" asp-action="Show" asp-route-projectId="@project.Project_id" class="btn btn-info">Details</a>
                         
@@ -34,6 +34,10 @@
                         {
                             <a href="@Url.Action("Edit", new { id = project.Project_id })" class="btn btn-warning">Edit</a>
                             <a href="@Url.Action("Delete", new { id = project.Project_id })" class="btn btn-danger">Delete</a>
+                        }
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="@Url.Action("ChangeOrganiser", new { id = project.Project_id })" class="btn btn-info">Change Organiser</a>
                         }
                     </td>
                 </tr>

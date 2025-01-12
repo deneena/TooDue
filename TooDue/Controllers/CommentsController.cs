@@ -31,19 +31,30 @@ namespace TooDue.Controllers
             {
                 return NotFound();
             }
+            var task = await _context.Tasks
+            .Where(t => t.Task_id == taskId)
+            .Select(t => new { t.Project_Id })
+            .FirstOrDefaultAsync();
+
+            if (task == null)
+            {
+                return NotFound();
+            }
+
+            var projectId = task.Project_Id;
 
             var comments = await _context.Comments
                .Where(c => c.TaskId == taskId)
                .Include(c => c.User) 
                .ToListAsync();
 
-            var projectUserTask = await _context.ProjectUserTask
-                .FirstOrDefaultAsync(put => put.Task_id == taskId);
+            //var projectUserTask = await _context.ProjectUserTask
+            //    .FirstOrDefaultAsync(put => put.Task_id == taskId);
 
-            if (projectUserTask == null)
-            {
-                return NotFound();
-            }
+            //if (projectUserTask == null)
+            //{
+            //    return NotFound();
+            //}
 
             if (!comments.Any())
             {
@@ -53,7 +64,7 @@ namespace TooDue.Controllers
 
             ViewBag.Comments = comments;
             ViewBag.TaskId = taskId;
-            ViewBag.ProjectId = projectUserTask.Project_id;
+            ViewBag.ProjectId = task.Project_Id;
             ViewBag.IsAdmin = User.IsInRole("Admin");
             var currentUser = await _userManager.GetUserAsync(User);
             ViewBag.CurrentUserId = currentUser?.Id;
@@ -207,13 +218,31 @@ namespace TooDue.Controllers
                 _logger.LogWarning("The currentuserID {currentUser.Id} and the userId of the comment {comment.UserId}", currentUser.Id, comment.UserId);
                 return Forbid();
             }
-            _logger.LogWarning("The currentuserID {currentUser.Id} and the userId of the comment {comment.UserId}", currentUser.Id, comment.UserId);
+
+            var existingComment = await _context.Comments.AsNoTracking().FirstOrDefaultAsync(c => c.Comment_id == id);
+            if (existingComment == null)
+            {
+                return NotFound();
+            }
+
+            existingComment.Comment_text = comment.Comment_text;
+            existingComment.Comment_Date = DateTime.Now;
+            existingComment.isEdited = true;
 
             if (ModelState.IsValid)
-            {  
-                _context.Update(comment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction("Show", new { taskId = comment.TaskId });
+            {
+                try
+                {
+                    _context.Entry(existingComment).State = EntityState.Detached;
+                    _context.Update(comment);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction("Show", new { taskId = comment.TaskId });
+                }
+                catch (DbUpdateException ex)
+                {
+                    _logger.LogError(ex, "An error occurred while updating the comment.");
+                    ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists, see your system administrator.");
+                }
             }
             else
             {
@@ -225,10 +254,12 @@ namespace TooDue.Controllers
                     }
                 }
             }
+
             ViewBag.TaskId = comment.TaskId;
             ViewBag.UserId = currentUser.Id;
             return View(comment);
         }
+
     }
 }
 

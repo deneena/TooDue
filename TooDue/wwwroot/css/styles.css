@@ -1,0 +1,317 @@
+﻿html, body {
+    height: 100%;
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+body {
+    background-image: url("../img/tema-deer.png");
+    background-size: 160px;
+    background-repeat: repeat;
+}
+
+.container-menu {
+    display: grid;
+    grid-gap: 20px;
+    grid-template-columns: 1fr 4fr;
+    height: 80vh;
+    width: 85vw;
+    margin-top: 14vh;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+.side-menu-back, .main-menu-back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    background-color: rgba(201, 5, 129, 0.6);
+    height: 100%;
+}
+
+.side-menu-back {
+    grid-column: 1 / 2;
+}
+
+.main-menu-back {
+    grid-column: 2 / 3;
+}
+
+.side-menu, .main-menu {
+    background-color: #c90581;
+    border-radius: 10px;
+    padding: 15px;
+    color: white;
+}
+
+.side-menu {
+    height: 95%;
+    width: 90%;
+}
+
+.main-menu {
+    height: 95%;
+    width: calc(100% - 22px);
+    overflow-y: auto;
+}
+
+.menu-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.library-thumb {
+    width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+
+.title {
+    margin: 0.5rem 0;
+    font-weight: bold;
+    font-size: 1.8rem;
+}
+
+.menu-categories {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .menu-categories a {
+        color: white;
+        padding: 12px 15px;
+        text-decoration: none;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+    }
+
+        .menu-categories a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .menu-categories a.active {
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: bold;
+        }
+
+.search-bar {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.project-card {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .project-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+.username {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.create-button {
+    background: white;
+    color: #c90581;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 20px;
+    transition: all 0.3s;
+}
+
+    .create-button:hover {
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+.top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background-color: #c90581;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    justify-content: space-between;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.app-name {
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+}
+
+.top-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.top-search {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 20px;
+    width: 300px;
+    background-color: rgba(255,255,255,0.9);
+}
+
+.login-btn {
+    padding: 8px 20px;
+    border: 2px solid white;
+    border-radius: 20px;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .login-btn:hover {
+        background: white;
+        color: #c90581;
+    }
+
+.container-menu {
+    margin-top: 80px;
+}
+
+.pfp {
+    height: 20vh;
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 100px;
+}
+
+.about-section {
+    background-color: #c90581;
+    border-radius: 30px;
+    align-items: center;
+    padding: 20px 20px;
+    justify-content: space-between;
+}
+
+.pros {
+    background-color: #c90581;
+    border-radius: 30px;
+    align-items: center;
+    padding: 20px 20px;
+    justify-content: space-between;
+}
+
+.join-now {
+    background-color: #c90581;
+    border-radius: 30px;
+    align-items: center;
+    padding: 20px 20px;
+    justify-content: space-between;
+}
+
+.profile-container {
+    display: grid;
+    grid-template-columns: 1.2fr 0.8fr;
+    gap: 30px;
+    height: 100%;
+}
+
+.left-section {
+    padding: 30px;
+}
+
+.profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: #333;
+    margin-bottom: 30px;
+}
+
+.profile-field {
+    margin-bottom: 20px;
+}
+
+    .profile-field input,
+    .profile-field textarea {
+        width: calc(100% - 24px);
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        background: rgba(153, 3, 98, 0.8);
+        color: white;
+        font-size: 1rem;
+    }
+
+    .profile-field textarea {
+        height: 120px;
+        resize: none;
+    }
+
+.stats-box {
+    background: rgba(153, 3, 98, 0.8);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    color: white;
+    font-size: 1.1rem;
+}
+
+.invite-button {
+    background: rgb(0, 255, 0);
+    color: black;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.customization-area {
+    background: rgb(0, 255, 0);
+    height: calc(100% - 140px);
+    border-radius: 8px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: black;
+    font-size: 1rem;
+    padding: 20px;
+}
+
+.right-section {
+    display: flex;
+    flex-direction: column;
+    padding: 30px;
+}

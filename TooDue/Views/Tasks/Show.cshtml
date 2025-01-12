@@ -1,12 +1,13 @@
 ﻿@{
     ViewBag.Title = "Tasks for Project";
     var tasks = ViewBag.Tasks as List<TooDue.Models.Task>;
-    var projectId = ViewBag.ProjectId ?? 0; // Ensure projectId is not null
+    var projectId = ViewBag.ProjectId ?? 0; 
     var isAdmin = User.IsInRole("Admin");
-    var isOrganizer = ViewBag.IsOrganizer ?? false; // Assuming you set this in the controller
+    var isOrganizer = ViewBag.IsOrganizer ?? false; 
+    var projectName = ViewBag.ProjectName;
 }
 
-<h2>Tasks for Project @projectId</h2>
+<h2>Tasks for Project @projectName</h2>
 
 @if (tasks != null && tasks.Any())
 {
@@ -17,6 +18,7 @@
                 <th>Description</th>
                 <th>Completion Status</th>
                 <th>Created Date</th>
+                <th>Deadline</th>
                 <th>Complete Date</th>
                 <th>Link to Media</th>
                 <th>Embedded Media</th>
@@ -31,6 +33,7 @@
                     <td>@task.Task_description</td>
                     <td>@task.Task_completion</td>
                     <td>@task.Task_create_date.ToString("yyyy-MM-dd")</td>
+                    <td>@task.Task_deadline</td>
                     <td>@(task.Task_completion == "Completed" ? task.Task_complete_date.ToString("yyyy-MM-dd") : "N/A")</td>
                     <td><a href="@task.Link_to_media" target="_blank">Media</a></td>
                     <td>

@@ -6,22 +6,61 @@
 
 <h2>Assign Task</h2>
 
-<form asp-action="Assign" method="post">
+<form asp-action="Assign">
     <div class="form-horizontal">
         <h4>Task</h4>
         <hr />
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" asp-for="Task_id" />
+        <input type="hidden" asp-for="Project_Id" />
 
         <div class="form-group">
-            <label class="control-label">Assign User</label>
-            <select class="form-control" name="selectedUser" asp-items="ViewBag.Users"></select>
+            <label asp-for="Task_name" class="control-label"></label>
+            <input asp-for="Task_name" class="form-control" readonly />
         </div>
         <div class="form-group">
-            <input type="submit" value="Assign" class="btn btn-primary" />
+            <label asp-for="Task_description" class="control-label"></label>
+            <input asp-for="Task_description" class="form-control" readonly />
         </div>
+
+        @if (ViewBag.AvailableUsers.Count > 0)
+        {
+            <div class="form-group">
+                <label for="selectedUser" class="control-label">Assign to User</label>
+                <select id="selectedUser" name="selectedUser" class="form-control">
+                    @foreach (var user in ViewBag.AvailableUsers)
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Assign" class="btn btn-primary" />
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-info">
+                No more users to assign to this task.
+            </div>
+        }
+
+        <h4>Users already assigned to this task</h4>
+        <ul>
+            @foreach (var user in ViewBag.UsersWithTask)
+            {
+                <li>@user.UserName</li>
+            }
+        </ul>
     </div>
 </form>
 
 <div>
     <a asp-action="Show" asp-route-projectId="@ViewBag.ProjectId">Back to List</a>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
