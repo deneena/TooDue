@@ -5,7 +5,7 @@
 namespace TooDue.Migrations
 {
     /// <inheritdoc />
-    public partial class hope : Migration
+    public partial class fp : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

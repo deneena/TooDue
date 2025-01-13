@@ -26,7 +26,17 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    SeedData.Initialize(services);
+    try
+    {
+        SeedData.Initialize(services);
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogInformation("everything worked ot fine");
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred seeding the DB.");
+    }
 }
 
 

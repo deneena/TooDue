@@ -12,8 +12,8 @@ using TooDue.Data;
 namespace TooDue.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250112024308_hope")]
-    partial class hope
+    [Migration("20250113102332_hopef")]
+    partial class hopef
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -373,6 +373,9 @@ namespace TooDue.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Task_create_date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("Task_deadline")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Task_description")

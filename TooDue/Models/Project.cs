@@ -19,7 +19,7 @@ namespace TooDue.Models
 
         public DateTime Project_create_date { get; set; } = DateTime.Now;
 
-        public string CreatedByUserId { get; set; } // Add this property
+        public string CreatedByUserId { get; set; } 
 
         public virtual ApplicationUser? CreatedByUser { get; set; }
     }

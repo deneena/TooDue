@@ -12,8 +12,8 @@ using TooDue.Data;
 namespace TooDue.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250112003028_fkTaskProj")]
-    partial class fkTaskProj
+    [Migration("20250113010237_fp")]
+    partial class fp
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -365,6 +365,9 @@ namespace TooDue.Migrations
                     b.Property<int>("Project_Id")
                         .HasColumnType("int");
 
+                    b.Property<int?>("Project_id")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("Task_complete_date")
                         .HasColumnType("datetime2");
 
@@ -387,7 +390,7 @@ namespace TooDue.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.HasIndex("Project_Id");
+                    b.HasIndex("Project_id");
 
                     b.ToTable("Tasks");
                 });
@@ -473,9 +476,7 @@ namespace TooDue.Migrations
 
                     b.HasOne("TooDue.Models.Project", "Project")
                         .WithMany()
-                        .HasForeignKey("Project_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("Project_id");
 
                     b.Navigation("Project");
                 });

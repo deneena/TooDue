@@ -372,6 +372,9 @@ namespace TooDue.Migrations
                     b.Property<DateTime>("Task_create_date")
                         .HasColumnType("datetime2");
 
+                    b.Property<DateTime>("Task_deadline")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Task_description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

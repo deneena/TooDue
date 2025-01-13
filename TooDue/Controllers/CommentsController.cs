@@ -68,6 +68,7 @@ namespace TooDue.Controllers
             ViewBag.IsAdmin = User.IsInRole("Admin");
             var currentUser = await _userManager.GetUserAsync(User);
             ViewBag.CurrentUserId = currentUser?.Id;
+            ViewBag.UserMail = currentUser.Email;
 
             return View();
         }

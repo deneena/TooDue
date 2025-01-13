@@ -18,7 +18,8 @@ namespace TooDue.Models
         [Required]
         public DateTime Task_complete_date { get; set; } = DateTime.Now;
 
-        public DateTime Task_deadline;
+        [Required]
+        public DateTime Task_deadline { get; set; } = DateTime.Now;
         [Required]
         public string Link_to_media { get; set; }
 

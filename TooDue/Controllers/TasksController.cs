@@ -216,22 +216,25 @@ namespace TooDue.Controllers
                 return NotFound();
             }
 
-            var projectUserTask = await _context.ProjectUserTask
-                .FirstOrDefaultAsync(put => put.Task_id == id);
-            //if (projectUserTask == null)
-            //{
-            //    return NotFound();
-            //}
+            
 
             var comments = _context.Comments.Where(c => c.TaskId == id);
             _context.Comments.RemoveRange(comments);
 
+            var projectUserTask = await _context.ProjectUserTask
+            .FirstOrDefaultAsync(p => p.Task_id == id);
+
+            if (projectUserTask != null)
+            {
+                _context.ProjectUserTask.Remove(projectUserTask);
+            }
+
             _context.Tasks.Remove(task);
-            _context.ProjectUserTask.Remove(projectUserTask);
+
             await _context.SaveChangesAsync();
             ViewBag.Message = "Task has been deleted.";
             ViewBag.MessageType = "alert-success";
-            return RedirectToAction("Show", new { projectId = projectUserTask.Project_id });
+            return RedirectToAction("Show", new { projectId = task.Project_Id });
         }
 
         [Authorize(Roles = "User,Admin")]
@@ -270,12 +273,16 @@ namespace TooDue.Controllers
                 return NotFound();
             }
 
-            if (task.Task_complete_date <= task.Task_create_date)
+
+            if (task.Task_deadline <= task.Task_create_date)
             {
-                ModelState.AddModelError("Task_complete_date", "Deadline must be greater than Start Date.");
+                _logger.LogInformation("nu mia pot");
+                ModelState.AddModelError("Task_deadline", "Task deadline must be greater than Start Date.");
                 ViewBag.ProjectId = task.Project_Id;
                 return View(task);
             }
+
+            TryValidateModel(task);
 
             if (ModelState.IsValid)
             {

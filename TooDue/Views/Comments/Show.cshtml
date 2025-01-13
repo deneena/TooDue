@@ -24,7 +24,12 @@
                 {
                     <tr>
                         <td>@comment.Comment_text</td>
-                        <td>@comment.Comment_Date</td>
+                        <td>@comment.Comment_Date
+                            @if (comment.isEdited == true)
+                            {
+                                @: [Edited]
+                            }
+                        </td>
                         <td>@ViewBag.UserMail</td>
                         <td>
                             @if(comment.UserId ==  ViewBag.CurrentUserId || ViewBag.IsAdmin)
